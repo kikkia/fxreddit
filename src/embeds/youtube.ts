@@ -10,14 +10,14 @@ export async function youtubeEmbed(post: RedditPost, link: string, head: HTMLEle
     // Clip links need another request to extract a proper url for embedding
     if (url.pathname.startsWith('/clip/')) {
         const html = await fetch(link, { ...CACHE_CONFIG }).then(r => r.text()).then(parseHTML);
-        const clipEmbed = html.querySelector('meta[name="twitter:player"]')?.getAttribute('content');
+        const clipEmbed = html.querySelector('meta[name="twitter:stream"]')?.getAttribute('content');
         const thumbnail = html.querySelector('meta[name="twitter:image"]')?.getAttribute('content');
 
         if (thumbnail) {
-            head.image(thumbnail, post.oembed?.width, post.oembed?.height);
+            head.image(thumbnail, post.resolution?.width, post.resolution?.height);
         }
         if (clipEmbed) {
-            head.video(clipEmbed, post.oembed?.width, post.oembed?.height, 'text/html');
+            head.video(clipEmbed, post.resolution?.width, post.resolution?.height, 'text/html');
         }
 
         return;

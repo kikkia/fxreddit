@@ -6,8 +6,9 @@ import { twitterLinkEmbed } from '../embeds/twitter';
 import '../html';
 import { get_packaged_video } from '../util';
 import { isNonNullish } from 'remeda';
-import { externalImageEmbed } from '../embeds/image_host';
+import { externalImgurEmbed } from '../embeds/imgur';
 import { encodeOEmbed } from './oembed';
+import { externalRedgifEmbed } from '../embeds/redgif';
 
 const imageExtensions = [
     'png',
@@ -30,6 +31,7 @@ function getDomainHandler(domain?: string) {
                 type: 'video.other',
             };
         case 'clips.twitch.tv':
+        case 'twitch.tv':
             return {
                 handler: twitchClipEmbed,
                 type: 'video.other',
@@ -41,9 +43,16 @@ function getDomainHandler(domain?: string) {
                 type: 'summary',
             };
         case 'imgur.com':
+        case 'i.imgur.com':
             return {
-                handler: externalImageEmbed,
-                type: 'article',
+                handler: externalImgurEmbed,
+                type: 'video.other',
+            };
+        case 'redgifs.com':
+        case 'v3.redgifs.com':
+            return {
+                handler: externalRedgifEmbed,
+                type: 'video.other',
             };
         default:
             return null;
@@ -68,7 +77,7 @@ export async function postToHtml(post: RedditPost): Promise<HTMLElement> {
         type: 'link',
         author_name: authorName,
         author_url: originalUrl,
-        provider_name: 'rxddit.com',
+        provider_name: 'vinny-fxreddit.kikkia.workers.dev',
         version: '1.0',
     }));
 
@@ -77,14 +86,15 @@ export async function postToHtml(post: RedditPost): Promise<HTMLElement> {
     canonical.setAttribute('href', originalUrl);
     head.meta('og:url', originalUrl);
 
-    head.meta('og:site_name', 'rxddit.com');
-    head.meta('twitter:site', 'rxddit.com');
+    head.meta('og:site_name', 'vinny-fxreddit.kikkia.workers.dev');
+    head.meta('twitter:site', 'vinny-fxreddit.kikkia.workers.dev');
     head.meta('theme-color', '#ff581a');
 
     let descriptionText = post.description;
     const descriptionStatus = [];
 
     let type = 'object';
+    console.log('HERE', post);
 
     switch (post.post_hint) {
         case 'image':
@@ -109,6 +119,8 @@ export async function postToHtml(post: RedditPost): Promise<HTMLElement> {
         }
         case 'link':
         default: {
+            console.log('in default handler ', post.domain);
+            
             const domainHandler = getDomainHandler(post.domain);
             if (domainHandler) {
                 type = domainHandler.type;
@@ -149,7 +161,7 @@ export async function postToHtml(post: RedditPost): Promise<HTMLElement> {
 
             break;
         }
-    }
+    }    
 
     head.meta('og:type', type);
 
@@ -171,6 +183,9 @@ export async function postToHtml(post: RedditPost): Promise<HTMLElement> {
         head.meta('og:description', description);
         head.meta('twitter:description', description);
     }
+
+    console.log(html);
+    
 
     return html;
 }

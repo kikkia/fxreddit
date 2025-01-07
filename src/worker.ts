@@ -1,5 +1,4 @@
 import { Router, html as HtmlResponse } from 'itty-router';
-import { Sentry } from '@borderless/worker-sentry';
 import { HTMLElement } from 'node-html-parser';
 import { httpEquiv } from './html';
 import { handleProfilePost, handleShortLinkPost, handleSubredditPost } from './endpoints/post';
@@ -9,17 +8,10 @@ import { GITHUB_LINK } from './constants';
 import { fallbackRedirect, getOriginalUrl, redirectPage } from './util';
 import { handleOEmbed } from './reddit/oembed';
 
-// const sentry = new Sentry({
-//     dsn: SENTRY_ENDPOINT,
-
-//     // Performance Monitoring
-//     // tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
-// });
-
 const router = Router();
 
 const ROBOTS_TXT = () => new Response('User-agent: *\nDisallow: /', { headers: { 'Content-Type': 'text/plain' } });
-const SECURITY_TXT = () => new Response('Contact: https://github.com/MinnDevelopment/fxreddit/issues/new', { headers: { 'Content-Type': 'text/plain' } });
+const SECURITY_TXT = () => new Response('Contact: https://github.com/kikkia/fxreddit/issues/new', { headers: { 'Content-Type': 'text/plain' } });
 const NOT_FOUND = () => new Response('Not Found', { status: 404 });
 
 router
@@ -64,22 +56,6 @@ addEventListener('fetch', (event) => {
         // Extend the event lifetime until the response from Sentry has resolved.
         // Docs: https://developers.cloudflare.com/workers/runtime-apis/fetch-event#methods
         console.error(err);
-        event.waitUntil(
-            // Sends a request to Sentry and returns the response promise.
-            sentry.captureException(err, {
-                tags: {
-                    level: 'handler',
-                },
-                request: {
-                    url: event.request.url,
-                    method: event.request.method,
-                    headers: Object.fromEntries(event.request.headers.entries()),
-                },
-                user: {
-                    ip: event.request.headers.get('cf-connecting-ip') ?? undefined,
-                },
-            }).catch(console.error)
-        );
 
         // Respond to the original request while the error is being logged (above).
         const html = new HTMLElement('html', {});
