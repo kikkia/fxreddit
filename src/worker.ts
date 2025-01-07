@@ -9,12 +9,12 @@ import { GITHUB_LINK } from './constants';
 import { fallbackRedirect, getOriginalUrl, redirectPage } from './util';
 import { handleOEmbed } from './reddit/oembed';
 
-const sentry = new Sentry({
-    dsn: SENTRY_ENDPOINT,
+// const sentry = new Sentry({
+//     dsn: SENTRY_ENDPOINT,
 
-    // Performance Monitoring
-    // tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
-});
+//     // Performance Monitoring
+//     // tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
+// });
 
 const router = Router();
 
