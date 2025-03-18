@@ -94,7 +94,6 @@ export async function postToHtml(post: RedditPost): Promise<HTMLElement> {
     const descriptionStatus = [];
 
     let type = 'object';
-    console.log('HERE', post);
 
     switch (post.post_hint) {
         case 'image':
@@ -119,7 +118,6 @@ export async function postToHtml(post: RedditPost): Promise<HTMLElement> {
         }
         case 'link':
         default: {
-            console.log('in default handler ', post.domain);
             
             const domainHandler = getDomainHandler(post.domain);
             if (domainHandler) {
@@ -182,10 +180,7 @@ export async function postToHtml(post: RedditPost): Promise<HTMLElement> {
     if (description.length) {
         head.meta('og:description', description);
         head.meta('twitter:description', description);
-    }
-
-    console.log(html);
-    
+    }    
 
     return html;
 }
